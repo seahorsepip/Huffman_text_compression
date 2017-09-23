@@ -37,8 +37,8 @@ public class Main {
                         //Incorrect method parameter
                         break;
                 }
-            } catch (IOException | ClassNotFoundException ignored) {
-                //Something went wrong while reading/writing/compressing/decompressing
+            } catch (IOException | Huffman.CompressionException ignored) {
+                //Files could not be read and/or written
             }
         }
     }

@@ -13,20 +13,24 @@ public class Huffman {
     /**
      * Returns an byte array of compressed data for the given text input
      *
-     * @param content      The content that should be compressed
-     * @return             The compressed data bytes
-     * @throws IOException Exception thrown when compressions fails
+     * @param content The content that should be compressed
+     * @return The compressed data bytes
+     * @throws CompressionException Exception thrown when compressions fails
      */
-    public static byte[] compress(String content) throws IOException {
+    public static byte[] compress(String content) throws CompressionException {
         TreeNode tree = new TreeNode(content); //Create Huffman tree
         EncodedText encodedText = new EncodedText(content, tree); //Encode content with Huffman tree
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
 
-        tree.writeObject(objectOutputStream); //Write Huffman tree to file *without class header*
-        encodedText.writeObject(objectOutputStream); //Write encoded text to file *without class header*
-        objectOutputStream.flush();
+            tree.writeObject(objectOutputStream); //Write Huffman tree to file *without class header*
+            encodedText.writeObject(objectOutputStream); //Write encoded text to file *without class header*
+            objectOutputStream.flush();
+        } catch (IOException e) {
+            throw new CompressionException(e.getMessage());
+        }
 
         return byteArrayOutputStream.toByteArray();
     }
@@ -34,20 +38,23 @@ public class Huffman {
     /**
      * Returns the original decompressed text for a given compressed data byte array
      *
-     * @param data                    The compressed data bytes
-     * @return                        The decompressed text
-     * @throws IOException            Exception thrown decompression fails
-     * @throws ClassNotFoundException Exception thrown decompression fails
+     * @param data The compressed data bytes
+     * @return The decompressed text
+     * @throws CompressionException Exception thrown when decompression fails
      */
-    public static String decompress(byte[] data) throws IOException, ClassNotFoundException {
+    public static String decompress(byte[] data) throws CompressionException {
         TreeNode tree = new TreeNode();
         EncodedText encodedText = new EncodedText();
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+        try {
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
 
-        tree.readObject(objectInputStream); //Read Huffman tree from file *without class header*
-        encodedText.readObject(objectInputStream); //Read encoded text from file *without class header*
+            tree.readObject(objectInputStream); //Read Huffman tree from file *without class header*
+            encodedText.readObject(objectInputStream); //Read encoded text from file *without class header*
+        } catch (IOException | ClassNotFoundException e) {
+            throw new CompressionException(e.getMessage());
+        }
 
         return encodedText.decode(tree); //Decode text using Huffman tree
     }
@@ -264,6 +271,12 @@ public class Huffman {
             }
 
             return content.toString();
+        }
+    }
+
+    public static class CompressionException extends Exception {
+        public CompressionException(String message) {
+            super(message);
         }
     }
 }
