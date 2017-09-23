@@ -25,8 +25,8 @@ public class Huffman {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
 
-            tree.writeObject(objectOutputStream); //Write Huffman tree to file *without class header*
-            encodedText.writeObject(objectOutputStream); //Write encoded text to file *without class header*
+            tree.writeObject(objectOutputStream); //Write Huffman tree to stream *without class header*
+            encodedText.writeObject(objectOutputStream); //Write encoded text to stream *without class header*
             objectOutputStream.flush();
         } catch (IOException e) {
             throw new CompressionException(e.getMessage());
@@ -50,8 +50,8 @@ public class Huffman {
         try {
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
 
-            tree.readObject(objectInputStream); //Read Huffman tree from file *without class header*
-            encodedText.readObject(objectInputStream); //Read encoded text from file *without class header*
+            tree.readObject(objectInputStream); //Read Huffman tree from stream *without class header*
+            encodedText.readObject(objectInputStream); //Read encoded text stream file *without class header*
         } catch (IOException | ClassNotFoundException e) {
             throw new CompressionException(e.getMessage());
         }
