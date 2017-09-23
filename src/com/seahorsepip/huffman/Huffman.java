@@ -147,6 +147,7 @@ public class Huffman {
             int size = objectInputStream.readInt(); //Read structure size
             byte[] structureBytes = new byte[(int) Math.ceil(size / 8.0)];
             objectInputStream.readFully(structureBytes, 0, structureBytes.length); //Read structure bytes
+
             //Convert structure bytes to booleans
             Queue<Boolean> structure = new ArrayDeque<>();
             for (byte b : structureBytes) for (int mask = 1; mask != 256; mask <<= 1) structure.add((b & mask) != 0);
