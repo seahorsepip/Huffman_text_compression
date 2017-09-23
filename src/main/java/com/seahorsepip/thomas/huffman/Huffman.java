@@ -1,14 +1,15 @@
 package com.seahorsepip.thomas.huffman;
 
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.util.*;
 
 /**
  * The {@code Huffman} class offers simple methods to compress and decompress text data using the Huffman algorithm
  *
- * @since 1.8
- * @see  <a href="https://sonarcloud.io/dashboard?id=com.seapip.thomas.huffman%3AHuffman">Code analysis</a>
  * @author Thomas Gladdines
+ * @see <a href="https://sonarcloud.io/dashboard?id=com.seapip.thomas.huffman%3AHuffman">Code analysis</a>
+ * @since 1.8
  */
 public class Huffman {
 
@@ -19,7 +20,9 @@ public class Huffman {
      * @return The compressed data bytes
      * @throws CompressionException Exception thrown when compressions fails
      */
-    public static byte[] compress(String content) throws CompressionException {
+    public static byte[] compress(@Nonnull String content) throws CompressionException {
+        if (content.length() == 0) throw new CompressionException("Content length has to be larger then zero");
+
         TreeNode tree = new TreeNode(content); //Create Huffman tree
         EncodedText encodedText = new EncodedText(content, tree); //Encode content with Huffman tree
 
@@ -44,7 +47,7 @@ public class Huffman {
      * @return The decompressed text
      * @throws CompressionException Exception thrown when decompression fails
      */
-    public static String decompress(byte[] data) throws CompressionException {
+    public static String decompress(@Nonnull byte[] data) throws CompressionException {
         TreeNode tree = new TreeNode();
         EncodedText encodedText = new EncodedText();
 
@@ -79,19 +82,23 @@ public class Huffman {
         Queue<Boolean> leftBits = new ArrayDeque<>(bits);
         leftBits.add(false);
 
-        if (leftNode instanceof CharacterNode) {
-            bitMap.put(((CharacterNode) leftNode).getCharacter(), leftBits);
-        } else {
-            getCharacterBits(leftNode, bitMap, leftBits);
+        if (leftNode != null) {
+            if (leftNode instanceof CharacterNode) {
+                bitMap.put(((CharacterNode) leftNode).getCharacter(), leftBits);
+            } else {
+                getCharacterBits(leftNode, bitMap, leftBits);
+            }
         }
 
         Queue<Boolean> rightBits = new ArrayDeque<>(bits);
         rightBits.add(true);
 
-        if (rightNode instanceof CharacterNode) {
-            bitMap.put(((CharacterNode) rightNode).getCharacter(), rightBits);
-        } else {
-            getCharacterBits(rightNode, bitMap, rightBits);
+        if (rightNode != null) {
+            if (rightNode instanceof CharacterNode) {
+                bitMap.put(((CharacterNode) rightNode).getCharacter(), rightBits);
+            } else {
+                getCharacterBits(rightNode, bitMap, rightBits);
+            }
         }
     }
 
@@ -114,6 +121,11 @@ public class Huffman {
             }
 
             //Create Huffman tree from character frequency map
+            if (frequencyMap.size() == 1) {
+                leftNode = new CharacterNode(content.charAt(0));
+                return;
+            }
+
             Queue<Node> queue = new PriorityQueue<>(frequencyMap.size(),
                     (o1, o2) -> ((Integer) o1.getValue()).compareTo(o2.getValue()));
             for (Map.Entry entry : frequencyMap.entrySet()) {
@@ -159,13 +171,15 @@ public class Huffman {
         }
 
         private void flattenTreeData(Collection<Character> characters, Collection<Boolean> structure, Node node) throws IOException {
-            if (node instanceof CharacterNode) {
-                characters.add(((CharacterNode) node).getCharacter());
-                structure.add(true);
-            } else {
-                structure.add(false);
-                flattenTreeData(characters, structure, ((TreeNode) node).getLeftNode());
-                flattenTreeData(characters, structure, ((TreeNode) node).getRightNode());
+            if (node != null) {
+                if (node instanceof CharacterNode) {
+                    characters.add(((CharacterNode) node).getCharacter());
+                    structure.add(true);
+                } else {
+                    structure.add(false);
+                    flattenTreeData(characters, structure, ((TreeNode) node).getLeftNode());
+                    flattenTreeData(characters, structure, ((TreeNode) node).getRightNode());
+                }
             }
         }
 
@@ -184,17 +198,23 @@ public class Huffman {
             //Create Huffman tree from characters and structure data
             TreeNode tree = (TreeNode) unflattenTreeData(characters, structure);
 
+
             //Set child node values of this tree to values from created Huffman tree
-            leftNode = tree.getLeftNode();
-            rightNode = tree.getRightNode();
+            if (tree != null) {
+                leftNode = tree.getLeftNode();
+                rightNode = tree.getRightNode();
+            }
         }
 
         private Node unflattenTreeData(Queue<Character> characters, Queue<Boolean> structure) {
-            if (structure.poll()) {
-                return new CharacterNode(characters.poll());
-            } else {
-                return new TreeNode(unflattenTreeData(characters, structure), unflattenTreeData(characters, structure));
+            if (!characters.isEmpty()) {
+                if (structure.poll()) {
+                    return new CharacterNode(characters.poll());
+                } else {
+                    return new TreeNode(unflattenTreeData(characters, structure), unflattenTreeData(characters, structure));
+                }
             }
+            return null;
         }
     }
 
@@ -222,8 +242,8 @@ public class Huffman {
     }
 
     private static class EncodedText implements Serializable {
-        private byte[] data;
-        private long length;
+        private transient byte[] data;
+        private transient long length;
 
         EncodedText() {
         }
