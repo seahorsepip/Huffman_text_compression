@@ -5,13 +5,16 @@ import java.io.*;
 import java.util.*;
 
 /**
- * The {@code Huffman} class offers simple methods to compress and decompress text data using the Huffman algorithm
+ * The {@code Huffman} class consists exclusively of static methods to compress and decompress
+ * text data using the Huffman algorithm.
  *
  * @author Thomas Gladdines
  * @see <a href="https://sonarcloud.io/dashboard?id=com.seapip.thomas.huffman%3AHuffman">Code analysis</a>
  * @since 1.8
  */
-public class Huffman {
+public final class Huffman {
+    private Huffman() {
+    }
 
     /**
      * Returns a byte array of compressed data for the given text input
