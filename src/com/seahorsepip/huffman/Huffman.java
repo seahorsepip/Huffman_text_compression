@@ -173,7 +173,7 @@ public class Huffman {
         private char character;
         private int value;
 
-        public CharacterNode(char character) {
+        CharacterNode(char character) {
             this.character = character;
         }
 
