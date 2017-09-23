@@ -24,13 +24,25 @@ public class HuffmanTest {
         }
     }
 
+    @Test
+    public void compressionSingleCharacter() {
+        String content = "A";
+        byte[] data = new byte[0];
+        try {
+            data = Huffman.compress(content);
+        } catch (Huffman.CompressionException e) {
+            fail("Failed to compress content");
+        }
+    }
+
     @Test(expected = Huffman.CompressionException.class)
     public void compressException() throws Huffman.CompressionException {
         Huffman.compress("");
     }
 
+
     @Test(expected = Huffman.CompressionException.class)
     public void decompressException() throws Huffman.CompressionException {
-        Huffman.decompress(new byte[64]);
+        Huffman.decompress(new byte[0]);
     }
 }
