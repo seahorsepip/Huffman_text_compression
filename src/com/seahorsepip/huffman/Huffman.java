@@ -13,9 +13,9 @@ public class Huffman {
     /**
      * Returns an byte array of compressed data for the given text input
      *
-     * @param content The content that should be compressed
-     * @return        The compressed data bytes
-     * @throws IOException
+     * @param content      The content that should be compressed
+     * @return             The compressed data bytes
+     * @throws IOException Exception thrown when compressions fails
      */
     public static byte[] compress(String content) throws IOException {
         TreeNode tree = new TreeNode(content); //Create Huffman tree
@@ -34,10 +34,10 @@ public class Huffman {
     /**
      * Returns the original decompressed text for a given compressed data byte array
      *
-     * @param data The compressed data bytes
-     * @return     The decompressed text
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @param data                    The compressed data bytes
+     * @return                        The decompressed text
+     * @throws IOException            Exception thrown decompression fails
+     * @throws ClassNotFoundException Exception thrown decompression fails
      */
     public static String decompress(byte[] data) throws IOException, ClassNotFoundException {
         TreeNode tree = new TreeNode();
