@@ -11,7 +11,7 @@ import java.util.*;
 public class Huffman {
 
     /**
-     * Returns an byte array of compressed data for the given text input
+     * Returns a byte array of compressed data for the given text input
      *
      * @param content The content that should be compressed
      * @return The compressed data bytes
