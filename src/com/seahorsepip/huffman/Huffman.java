@@ -3,8 +3,20 @@ package com.seahorsepip.huffman;
 import java.io.*;
 import java.util.*;
 
+/**
+ * The {@code Huffman} class offers simple methods to compress and decompress text data using the Huffman algorithm
+ *
+ * @author Thomas Gladdines
+ */
 public class Huffman {
 
+    /**
+     * Returns an byte array of compressed data for the given text input
+     *
+     * @param content The content that should be compressed
+     * @return        The compressed data bytes
+     * @throws IOException
+     */
     public static byte[] compress(String content) throws IOException {
         TreeNode tree = new TreeNode(content); //Create Huffman tree
         EncodedText encodedText = new EncodedText(content, tree); //Encode content with Huffman tree
@@ -19,6 +31,14 @@ public class Huffman {
         return byteArrayOutputStream.toByteArray();
     }
 
+    /**
+     * Returns the original decompressed text for a given compressed data byte array
+     *
+     * @param data The compressed data bytes
+     * @return     The decompressed text
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static String decompress(byte[] data) throws IOException, ClassNotFoundException {
         TreeNode tree = new TreeNode();
         EncodedText encodedText = new EncodedText();
