@@ -16,14 +16,20 @@ public class Main {
                 byte[] data;
                 switch (args[0].toLowerCase()) {
                     case "compress":
+                    case "encode":
+                    case "enc":
                     case "-c":
+                    case "-e":
                     case "c":
+                    case "e":
                         output = new File(args.length > 2 ? args[2] : input.toPath() + ".compressed");
                         content = new String(Files.readAllBytes(input.toPath()));
                         data = Huffman.compress(content);
                         Files.write(output.toPath(), data, StandardOpenOption.CREATE);
                         break;
                     case "decompress":
+                    case "decode":
+                    case "dec":
                     case "-d":
                     case "d":
                         String path = input.toPath().toString();
