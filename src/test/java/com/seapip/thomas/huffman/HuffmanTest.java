@@ -1,9 +1,9 @@
-package com.seahorsepip.thomas.huffman;
+package com.seapip.thomas.huffman;
 
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class HuffmanTest {
 
@@ -27,7 +27,7 @@ public class HuffmanTest {
     @Test
     public void compressionSingleCharacter() {
         String content = "A";
-        byte[] data = new byte[0];
+        byte[] data;
         try {
             data = Huffman.compress(content);
         } catch (Huffman.CompressionException e) {

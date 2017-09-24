@@ -1,4 +1,4 @@
-package com.seahorsepip.thomas.huffman;
+package com.seapip.thomas.huffman;
 
 import java.io.File;
 import java.io.IOException;

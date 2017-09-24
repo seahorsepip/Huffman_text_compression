@@ -1,4 +1,4 @@
-package com.seahorsepip.thomas.huffman;
+package com.seapip.thomas.huffman;
 
 import javax.annotation.Nonnull;
 import java.io.*;
