@@ -21,7 +21,7 @@ public class EncodedText implements Serializable {
         //Convert Huffman tree to map
         Map<Character, Collection<Boolean>> map = tree.toMap();
 
-        //Compress character using map with bit value of each character
+        //Encode characters using map
         Queue<Boolean> booleans = new ArrayDeque<>();
         for (char character : content.toCharArray()) booleans.addAll(map.get(character));
 
