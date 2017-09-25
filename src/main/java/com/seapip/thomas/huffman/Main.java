@@ -1,7 +1,5 @@
 package com.seapip.thomas.huffman;
 
-import com.seapip.thomas.huffman.huffman.Huffman;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

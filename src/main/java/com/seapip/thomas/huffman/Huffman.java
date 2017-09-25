@@ -1,4 +1,7 @@
-package com.seapip.thomas.huffman.huffman;
+package com.seapip.thomas.huffman;
+
+import com.seapip.thomas.huffman.huffman.EncodedText;
+import com.seapip.thomas.huffman.huffman.TreeNode;
 
 import javax.annotation.Nonnull;
 import java.io.*;
