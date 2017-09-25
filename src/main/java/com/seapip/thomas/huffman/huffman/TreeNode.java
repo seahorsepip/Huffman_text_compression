@@ -56,8 +56,11 @@ public class TreeNode implements Node, Serializable {
         return rightNode;
     }
 
+    public void write(ObjectOutputStream objectOutputStream) throws IOException {
+        writeObject(objectOutputStream);
+    }
 
-    public void writeObject(ObjectOutputStream objectOutputStream) throws IOException {
+    private void writeObject(ObjectOutputStream objectOutputStream) throws IOException {
         Queue<Character> characters = new ArrayDeque<>();
         Queue<Boolean> structure = new ArrayDeque<>();
 
@@ -85,10 +88,11 @@ public class TreeNode implements Node, Serializable {
         //Create Huffman tree from characters and tree structure
         TreeNode tree = (TreeNode) unflatten(characters, structure);
 
-
         //Set child node values of this tree to values from created Huffman tree
-        leftNode = tree.getLeftNode();
-        rightNode = tree.getRightNode();
+        if (tree != null) {
+            leftNode = tree.getLeftNode();
+            rightNode = tree.getRightNode();
+        }
     }
 
     private void flatten(Collection<Character> characters, Collection<Boolean> structure, Node node) throws IOException {

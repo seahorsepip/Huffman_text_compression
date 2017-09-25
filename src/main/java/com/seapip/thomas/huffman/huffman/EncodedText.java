@@ -29,7 +29,11 @@ public class EncodedText implements Serializable {
         length = content.length(); //Store content length
     }
 
-    public void writeObject(ObjectOutputStream objectOutputStream) throws IOException {
+    public void write(ObjectOutputStream objectOutputStream) throws IOException {
+        writeObject(objectOutputStream);
+    }
+
+    private void writeObject(ObjectOutputStream objectOutputStream) throws IOException {
         objectOutputStream.writeLong(length); //Write character count
         objectOutputStream.writeInt(data.length); //Write compressed data size in bytes
         objectOutputStream.write(data); //Write compressed data

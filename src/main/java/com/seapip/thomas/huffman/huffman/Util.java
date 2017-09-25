@@ -4,6 +4,9 @@ import java.util.BitSet;
 import java.util.Collection;
 
 public class Util {
+    private Util() {
+    }
+
     public static byte[] booleansToBytes(Collection<Boolean> collection) {
         BitSet bitSet = new BitSet(collection.size());
         int index = 0;
