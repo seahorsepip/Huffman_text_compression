@@ -9,6 +9,14 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Queue;
 
+/**
+ * The {@code EncodedText} class is used to encode and decode text using a Huffman tree.
+ * It also has it's own serialization implementation so it can be stored using less bytes.
+ *
+ * @author Thomas Gladdines
+ * @see <a href="https://sonarcloud.io/dashboard?id=com.seapip.thomas.huffman%3AHuffman">Code analysis</a>
+ * @since 1.8
+ */
 public class EncodedText implements Serializable {
     private transient byte[] data;
     private transient long length;

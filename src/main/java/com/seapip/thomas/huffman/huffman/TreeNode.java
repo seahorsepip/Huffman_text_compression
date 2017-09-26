@@ -6,6 +6,15 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * The {@code TreeNode} class consists of a left and right node and has constructor methods
+ * to be simply created from a given text. It also has it's own serialization implementation
+ * so it can be stored using less bytes.
+ *
+ * @author Thomas Gladdines
+ * @see <a href="https://sonarcloud.io/dashboard?id=com.seapip.thomas.huffman%3AHuffman">Code analysis</a>
+ * @since 1.8
+ */
 public class TreeNode implements Node, Serializable {
     private transient Node leftNode;
     private transient Node rightNode;

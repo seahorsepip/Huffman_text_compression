@@ -3,6 +3,13 @@ package com.seapip.thomas.huffman.huffman;
 import java.util.BitSet;
 import java.util.Collection;
 
+/**
+ * The {@code Util} class consists of helper methods used by other classes.
+ *
+ * @author Thomas Gladdines
+ * @see <a href="https://sonarcloud.io/dashboard?id=com.seapip.thomas.huffman%3AHuffman">Code analysis</a>
+ * @since 1.8
+ */
 public class Util {
     private Util() {
     }
