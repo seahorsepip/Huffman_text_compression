@@ -55,8 +55,8 @@ public class EncodedText implements Serializable {
         for (byte b : data) {
             for (int mask = 1; mask != 256; mask <<= 1) {
                 if (offset >= length) break;
-                if (node instanceof CharacterNode) {
-                    content.append(((CharacterNode) node).getCharacter());
+                if (node instanceof CharNode) {
+                    content.append(((CharNode) node).getCharacter());
                     node = tree;
                     offset++;
                 }

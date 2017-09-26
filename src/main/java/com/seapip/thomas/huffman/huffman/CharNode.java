@@ -1,14 +1,14 @@
 package com.seapip.thomas.huffman.huffman;
 
-public class CharacterNode implements Node {
+public class CharNode implements Node {
     private char character;
     private int value;
 
-    CharacterNode(char character) {
+    CharNode(char character) {
         this.character = character;
     }
 
-    CharacterNode(char character, int value) {
+    CharNode(char character, int value) {
         this.character = character;
         this.value = value;
     }

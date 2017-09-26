@@ -16,21 +16,16 @@ public class TreeNode implements Node, Serializable {
 
     public TreeNode(String content) {
         //Create character frequency map
-        Map<Character, Integer> frequencyMap = new HashMap<>();
-        for (char character : content.toCharArray()) {
-            frequencyMap.put(character, frequencyMap.getOrDefault(character, 0) + 1);
-        }
+        Map<Character, Integer> map = new HashMap<>();
+        for (char character : content.toCharArray()) map.put(character, map.getOrDefault(character, 0) + 1);
 
         //Create Huffman tree from character frequency map
-        if (frequencyMap.size() == 1) {
-            leftNode = new CharacterNode(content.charAt(0));
+        if (map.size() == 1) {
+            leftNode = new CharNode(content.charAt(0));
             return;
         }
-        Queue<Node> queue = new PriorityQueue<>(frequencyMap.size(),
-                (o1, o2) -> ((Integer) o1.getValue()).compareTo(o2.getValue()));
-        for (Map.Entry entry : frequencyMap.entrySet()) {
-            queue.add(new CharacterNode((char) entry.getKey(), (int) entry.getValue()));
-        }
+        Queue<Node> queue = new PriorityQueue<>(map.size(), (o1, o2) -> ((Integer) o1.getValue()).compareTo(o2.getValue()));
+        for (Map.Entry entry : map.entrySet()) queue.add(new CharNode((char) entry.getKey(), (int) entry.getValue()));
         while (queue.size() > 1) queue.add(new TreeNode(queue.poll(), queue.poll()));
 
         //Set child node values of this tree to values from created Huffman tree
@@ -97,8 +92,8 @@ public class TreeNode implements Node, Serializable {
 
     private void flatten(Collection<Character> characters, Collection<Boolean> structure, Node node) throws IOException {
         if (node == null) return;
-        if (node instanceof CharacterNode) {
-            characters.add(((CharacterNode) node).getCharacter());
+        if (node instanceof CharNode) {
+            characters.add(((CharNode) node).getCharacter());
             structure.add(true);
         } else {
             structure.add(false);
@@ -110,7 +105,7 @@ public class TreeNode implements Node, Serializable {
     private Node unflatten(Queue<Character> characters, Queue<Boolean> structure) {
         if (!characters.isEmpty()) {
             if (structure.poll()) {
-                return new CharacterNode(characters.poll());
+                return new CharNode(characters.poll());
             } else {
                 return new TreeNode(unflatten(characters, structure), unflatten(characters, structure));
             }
@@ -130,8 +125,8 @@ public class TreeNode implements Node, Serializable {
         booleans.add(b);
 
         if (node != null) {
-            if (node instanceof CharacterNode) {
-                map.put(((CharacterNode) node).getCharacter(), booleans);
+            if (node instanceof CharNode) {
+                map.put(((CharNode) node).getCharacter(), booleans);
             } else {
                 toMap(((TreeNode) node).getLeftNode(), map, booleans, false);
                 toMap(((TreeNode) node).getRightNode(), map, booleans, true);
