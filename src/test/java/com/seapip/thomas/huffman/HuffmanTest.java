@@ -2,34 +2,60 @@ package com.seapip.thomas.huffman;
 
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 import static org.junit.Assert.assertEquals;
 
 public class HuffmanTest {
 
-    //Tests have to rewritten due to refactoring :/
-
-    /*
     @Test
     public void compression() throws Exception {
         String content = "Eerie eyes seen near lake.";
-        byte[] data = Huffman.compress(content);
-        assertEquals("Compressed data should be 64 bytes", 64, data.length);
-        assertEquals("Decompressed data is equal to original data", content, Huffman.decompress(data));
+        byte[] data;
+
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(content.getBytes());
+             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+
+            Huffman.compress(byteArrayInputStream, byteArrayOutputStream);
+            data = byteArrayOutputStream.toByteArray();
+            assertEquals("Compressed data size should be 58 bytes", 58, data.length);
+        }
+
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+
+            Huffman.decompress(byteArrayInputStream, byteArrayOutputStream);
+            data = byteArrayOutputStream.toByteArray();
+            assertEquals("Decompressed data is equal to original data", content, new String(data));
+        }
     }
 
     @Test
     public void compressionSingleCharacter() throws Exception {
-        Huffman.compress("A");
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream("A".getBytes());
+             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+
+            Huffman.compress(byteArrayInputStream, byteArrayOutputStream);
+        }
     }
 
     @Test(expected = Huffman.CompressionException.class)
     public void compressException() throws Exception {
-        Huffman.compress("");
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream("".getBytes());
+             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+
+            Huffman.compress(byteArrayInputStream, byteArrayOutputStream);
+        }
     }
 
 
     @Test(expected = Huffman.CompressionException.class)
     public void decompressException() throws Exception {
-        Huffman.decompress(new byte[0]);
-    }*/
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(new byte[0]);
+             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+
+            Huffman.compress(byteArrayInputStream, byteArrayOutputStream);
+        }
+    }
 }

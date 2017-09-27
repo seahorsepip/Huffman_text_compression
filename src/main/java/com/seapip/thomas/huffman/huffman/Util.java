@@ -1,5 +1,6 @@
 package com.seapip.thomas.huffman.huffman;
 
+import java.util.ArrayDeque;
 import java.util.BitSet;
 import java.util.Collection;
 
@@ -23,5 +24,11 @@ public class Util {
         }
         bitSet.set(index, true); //Set additional bit after last bit to true to prevent bits from being trimmed
         return bitSet.toByteArray();
+    }
+
+    public static Collection<Boolean> addBoolean(Collection<Boolean> collection, Boolean b) {
+        Collection<Boolean> collectionCopy = new ArrayDeque<>(collection);
+        collectionCopy.add(b);
+        return collectionCopy;
     }
 }

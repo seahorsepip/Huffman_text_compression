@@ -1,6 +1,7 @@
 package com.seapip.thomas.huffman.huffman;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * The {@code CharNode} class consists of a single character and it's frequency
@@ -36,6 +37,11 @@ public class CharNode implements Node {
     public void flatten(Collection<Character> characters, Collection<Boolean> structure) {
         structure.add(true);
         characters.add(character);
+    }
+
+    @Override
+    public void toMap(Map<Character, Collection<Boolean>> map, Collection<Boolean> booleans) {
+        map.put(character, booleans);
     }
 
     @Override

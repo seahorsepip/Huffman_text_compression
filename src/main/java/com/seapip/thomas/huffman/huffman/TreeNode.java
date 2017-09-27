@@ -1,8 +1,14 @@
 package com.seapip.thomas.huffman.huffman;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.*;
+
+import static com.seapip.thomas.huffman.huffman.Util.addBoolean;
+import static com.seapip.thomas.huffman.huffman.Util.booleansToBytes;
 
 /**
  * The {@code TreeNode} class consists of a left and right node and has constructor methods
@@ -51,24 +57,21 @@ public class TreeNode implements Node {
 
     public static TreeNode read(InputStream inputStream) throws IOException {
         DataInputStream dataInputStream = new DataInputStream(inputStream);
-        byte[] data;
+        byte[] data = new byte[4];
 
         //Read character count
-        data = new byte[Integer.SIZE / Byte.SIZE];
-        dataInputStream.readFully(data, 0, data.length);
+        dataInputStream.readFully(data, 0, 4);
         int count = ByteBuffer.wrap(data).getInt();
 
         //Read characters
         Queue<Character> characters = new ArrayDeque<>(count);
         for (int i = 0; i < count; i++) {
-            data = new byte[Character.SIZE / Byte.SIZE];
-            dataInputStream.readFully(data, 0, data.length);
+            dataInputStream.readFully(data, 0, 2);
             characters.add(ByteBuffer.wrap(data).getChar());
         }
 
         //Read structure size
-        data = new byte[Integer.SIZE / Byte.SIZE];
-        dataInputStream.readFully(data, 0, data.length);
+        dataInputStream.readFully(data, 0, 4);
         int size = ByteBuffer.wrap(data).getInt();
 
         //Read structure bytes
@@ -91,10 +94,8 @@ public class TreeNode implements Node {
     }
 
     private Node unflatten(Queue<Character> characters, Queue<Boolean> structure) {
-        if (!characters.isEmpty()) {
-            return structure.poll() ? new CharNode(characters.poll()) : new TreeNode(unflatten(characters, structure), unflatten(characters, structure));
-        }
-        return null;
+        if (characters.isEmpty()) return null;
+        return structure.poll() ? new CharNode(characters.poll()) : new TreeNode(unflatten(characters, structure), unflatten(characters, structure));
     }
 
     @Override
@@ -118,39 +119,22 @@ public class TreeNode implements Node {
         flatten(characters, structure);
 
         //Write character count
-        outputStream.write(ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(characters.size()).array());
+        outputStream.write(ByteBuffer.allocate(4).putInt(characters.size()).array());
 
         //Write character
-        for (Character character : characters) {
-            outputStream.write(ByteBuffer.allocate(Character.SIZE / Byte.SIZE).putChar(character).array());
-        }
+        for (Character character : characters) outputStream.write(ByteBuffer.allocate(2).putChar(character).array());
 
         //Write structure size
-        outputStream.write(ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(structure.size()).array());
+        outputStream.write(ByteBuffer.allocate(4).putInt(structure.size()).array());
 
         //Write tree structure
-        outputStream.write(Util.booleansToBytes(structure));
+        outputStream.write(booleansToBytes(structure));
     }
 
-    public Map<Character, Collection<Boolean>> toMap() {
-        Map<Character, Collection<Boolean>> map = new HashMap<>();
-        toMap(leftNode, map, new ArrayDeque<>(), false);
-        toMap(rightNode, map, new ArrayDeque<>(), true);
-        return map;
-    }
-
-    private void toMap(Node node, Map<Character, Collection<Boolean>> map, Deque<Boolean> booleans, boolean b) {
-        Deque<Boolean> booleansCopy = new ArrayDeque<>(booleans);
-        booleansCopy.add(b);
-
-        if (node != null) {
-            if (node instanceof CharNode) {
-                map.put(((CharNode) node).getCharacter(), booleansCopy);
-            } else {
-                toMap(((TreeNode) node).getLeftNode(), map, booleansCopy, false);
-                toMap(((TreeNode) node).getRightNode(), map, booleansCopy, true);
-            }
-        }
+    @Override
+    public void toMap(Map<Character, Collection<Boolean>> map, Collection<Boolean> booleans) {
+        if (leftNode != null) leftNode.toMap(map, addBoolean(booleans, false));
+        if (rightNode != null) rightNode.toMap(map, addBoolean(booleans, true));
     }
 
     @Override

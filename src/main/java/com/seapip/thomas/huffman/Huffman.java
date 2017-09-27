@@ -3,11 +3,12 @@ package com.seapip.thomas.huffman;
 import com.seapip.thomas.huffman.huffman.CharNode;
 import com.seapip.thomas.huffman.huffman.Node;
 import com.seapip.thomas.huffman.huffman.TreeNode;
-import com.seapip.thomas.huffman.huffman.Util;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
+
+import static com.seapip.thomas.huffman.huffman.Util.booleansToBytes;
 
 /**
  * The {@code Huffman} class consists exclusively of static methods to compress and decompress
@@ -37,26 +38,30 @@ public final class Huffman {
                 content.append(scanner.next());
             }
 
+            if (content.length() == 0) throw new CompressionException("Content length needs to be larger then zero.");
+
             //Create Huffman tree
             TreeNode tree = new TreeNode(content.toString());
 
             //Convert Huffman tree to map
-            Map<Character, Collection<Boolean>> map = tree.toMap();
+            Map<Character, Collection<Boolean>> map = new HashMap<>();
+            tree.toMap(map, new ArrayDeque<>());
 
             //Encode characters using map
-            Queue<Boolean> booleans = new ArrayDeque<>();
+            Collection<Boolean> booleans = new ArrayDeque<>();
             for (char character : content.toString().toCharArray()) booleans.addAll(map.get(character));
 
-            byte[] data = Util.booleansToBytes(booleans); //Convert encoded data to byte array
+            //Convert encoded data to byte array
+            byte[] data = booleansToBytes(booleans);
 
             //Write Huffman tree
             tree.write(outputStream);
 
             //Write character count
-            outputStream.write(ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(content.length()).array());
+            outputStream.write(ByteBuffer.allocate(8).putLong(content.length()).array());
 
             //Write compressed data size in bytes
-            outputStream.write(ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(data.length).array());
+            outputStream.write(ByteBuffer.allocate(4).putInt(data.length).array());
 
             //Write compressed data
             outputStream.write(data);
@@ -74,23 +79,23 @@ public final class Huffman {
      */
     public static void decompress(InputStream inputStream, OutputStream outputStream) throws CompressionException {
         try {
-            DataInputStream dataInputStream = new DataInputStream(inputStream);
+            //Read Huffman tree
             TreeNode tree = TreeNode.read(inputStream);
-            byte[] data;
+
+            DataInputStream dataInputStream = new DataInputStream(inputStream);
+            byte[] data = new byte[8];
 
             //Read character count
-            data = new byte[Long.SIZE / Byte.SIZE];
-            dataInputStream.readFully(data, 0, data.length);
+            dataInputStream.readFully(data, 0, 8);
             long length = ByteBuffer.wrap(data).getLong();
 
             //Read compressed data size in bytes
-            data = new byte[Integer.SIZE / Byte.SIZE];
-            dataInputStream.readFully(data, 0, data.length);
+            dataInputStream.readFully(data, 0, 4);
             int size = ByteBuffer.wrap(data).getInt();
 
+            //Decode compressed data using Huffman tree
             Node node = tree;
             int offset = 0;
-
             try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(outputStream)), true);) {
                 for (int i = 0; i < size; i++) {
                     byte b = dataInputStream.readByte();

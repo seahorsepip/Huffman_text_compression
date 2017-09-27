@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Huffman.iml" filepath="$PROJECT_DIR$/Huffman.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Huffman_text_compression.iml" filepath="$PROJECT_DIR$/.idea/modules/Huffman_text_compression.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Huffman_text_compression_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Huffman_text_compression_main.iml" group="Huffman_text_compression" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Huffman_text_compression_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Huffman_text_compression_test.iml" group="Huffman_text_compression" />
     </modules>
   </component>
 </project>
