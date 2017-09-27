@@ -1,5 +1,7 @@
 package com.seapip.thomas.huffman.huffman;
 
+import java.util.Collection;
+
 /**
  * The {@code CharNode} class consists of a single character and it's frequency
  * and is used in combination with the {@code TreeNode} class.
@@ -12,11 +14,11 @@ public class CharNode implements Node {
     private char character;
     private int value;
 
-    CharNode(char character) {
+    public CharNode(char character) {
         this.character = character;
     }
 
-    CharNode(char character, int value) {
+    public CharNode(char character, int value) {
         this.character = character;
         this.value = value;
     }
@@ -26,7 +28,18 @@ public class CharNode implements Node {
         return value;
     }
 
-    char getCharacter() {
+    public char getCharacter() {
         return character;
+    }
+
+    @Override
+    public void flatten(Collection<Character> characters, Collection<Boolean> structure) {
+        structure.add(true);
+        characters.add(character);
+    }
+
+    @Override
+    public String toString() {
+        return Character.toString(character);
     }
 }

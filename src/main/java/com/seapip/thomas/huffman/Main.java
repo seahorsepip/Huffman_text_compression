@@ -1,19 +1,14 @@
 package com.seapip.thomas.huffman;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
+import java.io.*;
 
 public class Main {
 
     public static void main(String[] args) {
         if (args.length > 1) {
-            try {
-                File input = new File(args[1]);
-                File output;
-                String content;
-                byte[] data;
+            File input = new File(args[1]);
+            try (FileInputStream fileInputStream = new FileInputStream(input)) {
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
                 switch (args[0].toLowerCase()) {
                     case "compress":
                     case "encode":
@@ -22,10 +17,11 @@ public class Main {
                     case "-e":
                     case "c":
                     case "e":
-                        output = new File(args.length > 2 ? args[2] : input.toPath() + ".compressed");
-                        content = new String(Files.readAllBytes(input.toPath()));
-                        data = Huffman.compress(content);
-                        Files.write(output.toPath(), data, StandardOpenOption.CREATE);
+                        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(args.length > 2 ? args[2] : input.toPath() + ".compressed"));
+                             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);) {
+
+                            Huffman.compress(bufferedInputStream, bufferedOutputStream);
+                        }
                         break;
                     case "decompress":
                     case "decode":
@@ -34,10 +30,11 @@ public class Main {
                     case "d":
                         String path = input.toPath().toString();
                         path = (path.endsWith(".compressed") ? path.substring(0, path.length() - 11) : path);
-                        output = new File(args.length > 2 ? args[2] : path + ".decompressed");
-                        data = Files.readAllBytes(input.toPath());
-                        content = Huffman.decompress(data);
-                        Files.write(output.toPath(), content.getBytes(), StandardOpenOption.CREATE);
+                        try (FileOutputStream fileOutputStream = new FileOutputStream(new File(args.length > 2 ? args[2] : path + ".decompressed"));
+                             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);) {
+
+                            Huffman.decompress(bufferedInputStream, bufferedOutputStream);
+                        }
                         break;
                     default:
                         //Incorrect method parameter

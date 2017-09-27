@@ -1,5 +1,7 @@
 package com.seapip.thomas.huffman.huffman;
 
+import java.util.Collection;
+
 /**
  * The {@code Node} interface is implemented by both the {@code TreeNode} and the {@node CharNode}.
  *
@@ -9,4 +11,6 @@ package com.seapip.thomas.huffman.huffman;
  */
 public interface Node {
     int getValue();
+
+    void flatten(Collection<Character> characters, Collection<Boolean> structure);
 }

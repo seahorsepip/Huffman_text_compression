@@ -1,9 +1,7 @@
 package com.seapip.thomas.huffman.huffman;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
@@ -15,13 +13,9 @@ import java.util.*;
  * @see <a href="https://sonarcloud.io/dashboard?id=com.seapip.thomas.huffman%3AHuffman">Code analysis</a>
  * @since 1.8
  */
-public class TreeNode implements Node, Serializable {
-    private transient Node leftNode;
-    private transient Node rightNode;
-
-    public TreeNode(ObjectInputStream objectInputStream) throws IOException, ClassNotFoundException {
-        readObject(objectInputStream);
-    }
+public class TreeNode implements Node {
+    private Node leftNode;
+    private Node rightNode;
 
     public TreeNode(String content) {
         //Create character frequency map
@@ -47,79 +41,95 @@ public class TreeNode implements Node, Serializable {
         this.rightNode = rightNode;
     }
 
-    @Override
-    public int getValue() {
-        return leftNode.getValue() + rightNode.getValue();
-    }
-
-    Node getLeftNode() {
-        return leftNode;
-    }
-
-    Node getRightNode() {
-        return rightNode;
-    }
-
-    public void write(ObjectOutputStream objectOutputStream) throws IOException {
-        writeObject(objectOutputStream);
-    }
-
-    private void writeObject(ObjectOutputStream objectOutputStream) throws IOException {
-        Queue<Character> characters = new ArrayDeque<>();
-        Queue<Boolean> structure = new ArrayDeque<>();
-
-        //Get characters and tree structure in pre order tree traversal
-        flatten(characters, structure, this);
-
-        objectOutputStream.writeInt(characters.size()); //Write character count
-        for (Character character : characters) objectOutputStream.writeChar(character); //Write characters
-        objectOutputStream.writeInt(structure.size()); //Write structure size
-        objectOutputStream.write(Util.booleansToBytes(structure)); //Write tree structure
-    }
-
-    private void readObject(ObjectInputStream objectInputStream) throws IOException, ClassNotFoundException {
-        int count = objectInputStream.readInt(); //Read character count
-        Queue<Character> characters = new ArrayDeque<>(count);
-        for (int i = 0; i < count; i++) characters.add(objectInputStream.readChar()); //Read characters
-        int size = objectInputStream.readInt(); //Read structure size
-        byte[] structureBytes = new byte[(int) Math.ceil(size / 8.0)];
-        objectInputStream.readFully(structureBytes, 0, structureBytes.length); //Read structure bytes
-
-        //Convert structure bytes to booleans
-        Queue<Boolean> structure = new ArrayDeque<>();
-        for (byte b : structureBytes) for (int mask = 1; mask != 256; mask <<= 1) structure.add((b & mask) != 0);
-
-        //Create Huffman tree from characters and tree structure
+    public TreeNode(Queue<Character> characters, Queue<Boolean> structure) {
         TreeNode tree = (TreeNode) unflatten(characters, structure);
-
-        //Set child node values of this tree to values from created Huffman tree
         if (tree != null) {
             leftNode = tree.getLeftNode();
             rightNode = tree.getRightNode();
         }
     }
 
-    private void flatten(Collection<Character> characters, Collection<Boolean> structure, Node node) throws IOException {
-        if (node == null) return;
-        if (node instanceof CharNode) {
-            characters.add(((CharNode) node).getCharacter());
-            structure.add(true);
-        } else {
-            structure.add(false);
-            flatten(characters, structure, ((TreeNode) node).getLeftNode());
-            flatten(characters, structure, ((TreeNode) node).getRightNode());
+    public static TreeNode read(InputStream inputStream) throws IOException {
+        DataInputStream dataInputStream = new DataInputStream(inputStream);
+        byte[] data;
+
+        //Read character count
+        data = new byte[Integer.SIZE / Byte.SIZE];
+        dataInputStream.readFully(data, 0, data.length);
+        int count = ByteBuffer.wrap(data).getInt();
+
+        //Read characters
+        Queue<Character> characters = new ArrayDeque<>(count);
+        for (int i = 0; i < count; i++) {
+            data = new byte[Character.SIZE / Byte.SIZE];
+            dataInputStream.readFully(data, 0, data.length);
+            characters.add(ByteBuffer.wrap(data).getChar());
         }
+
+        //Read structure size
+        data = new byte[Integer.SIZE / Byte.SIZE];
+        dataInputStream.readFully(data, 0, data.length);
+        int size = ByteBuffer.wrap(data).getInt();
+
+        //Read structure bytes
+        byte[] structureBytes = new byte[(int) Math.ceil(size / 8.0)];
+        dataInputStream.readFully(structureBytes, 0, structureBytes.length);
+
+        //Convert structure bytes to booleans
+        Queue<Boolean> structure = new ArrayDeque<>();
+        for (byte b : structureBytes) for (int mask = 1; mask != 256; mask <<= 1) structure.add((b & mask) != 0);
+
+        //Create Huffman tree from characters and tree structure
+        return new TreeNode(characters, structure);
+    }
+
+    @Override
+    public void flatten(Collection<Character> characters, Collection<Boolean> structure) {
+        structure.add(false);
+        if (leftNode != null) leftNode.flatten(characters, structure);
+        if (rightNode != null) rightNode.flatten(characters, structure);
     }
 
     private Node unflatten(Queue<Character> characters, Queue<Boolean> structure) {
         if (!characters.isEmpty()) {
-            if (structure.poll()) {
-                return new CharNode(characters.poll());
-            } else {
-                return new TreeNode(unflatten(characters, structure), unflatten(characters, structure));
-            }
+            return structure.poll() ? new CharNode(characters.poll()) : new TreeNode(unflatten(characters, structure), unflatten(characters, structure));
         }
         return null;
+    }
+
+    @Override
+    public int getValue() {
+        return leftNode.getValue() + rightNode.getValue();
+    }
+
+    public Node getLeftNode() {
+        return leftNode;
+    }
+
+    public Node getRightNode() {
+        return rightNode;
+    }
+
+    public void write(OutputStream outputStream) throws IOException {
+        Queue<Character> characters = new ArrayDeque<>();
+        Queue<Boolean> structure = new ArrayDeque<>();
+
+        //Get characters and tree structure in pre order tree traversal
+        flatten(characters, structure);
+
+        //Write character count
+        outputStream.write(ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(characters.size()).array());
+
+        //Write character
+        for (Character character : characters) {
+            outputStream.write(ByteBuffer.allocate(Character.SIZE / Byte.SIZE).putChar(character).array());
+        }
+
+        //Write structure size
+        outputStream.write(ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(structure.size()).array());
+
+        //Write tree structure
+        outputStream.write(Util.booleansToBytes(structure));
     }
 
     public Map<Character, Collection<Boolean>> toMap() {
@@ -130,16 +140,21 @@ public class TreeNode implements Node, Serializable {
     }
 
     private void toMap(Node node, Map<Character, Collection<Boolean>> map, Deque<Boolean> booleans, boolean b) {
-        booleans = new ArrayDeque<>(booleans);
-        booleans.add(b);
+        Deque<Boolean> booleansCopy = new ArrayDeque<>(booleans);
+        booleansCopy.add(b);
 
         if (node != null) {
             if (node instanceof CharNode) {
-                map.put(((CharNode) node).getCharacter(), booleans);
+                map.put(((CharNode) node).getCharacter(), booleansCopy);
             } else {
-                toMap(((TreeNode) node).getLeftNode(), map, booleans, false);
-                toMap(((TreeNode) node).getRightNode(), map, booleans, true);
+                toMap(((TreeNode) node).getLeftNode(), map, booleansCopy, false);
+                toMap(((TreeNode) node).getRightNode(), map, booleansCopy, true);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "{" + leftNode + ", " + rightNode + '}';
     }
 }
