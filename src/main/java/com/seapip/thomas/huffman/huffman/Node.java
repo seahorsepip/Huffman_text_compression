@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * The {@code Node} interface is implemented by both the {@code TreeNode} and the {@node CharNode}.
+ * The {@code Node} interface is implemented by both the {@code TreeNode} and the {@code CharNode}.
  *
  * @author Thomas Gladdines
  * @see <a href="https://sonarcloud.io/dashboard?id=com.seapip.thomas.huffman%3AHuffman">Code analysis</a>
