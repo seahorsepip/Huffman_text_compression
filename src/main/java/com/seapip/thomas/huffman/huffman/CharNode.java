@@ -53,7 +53,7 @@ public class CharNode implements Node {
     public void toString(StringBuilder stringBuilder, StringBuilder prefix, boolean isTail) {
         stringBuilder.append(prefix)
                 .append("|-\'")
-                .append(Character.toString(character).replace("\n", "\\n").replace("\r", "\\r"))
+                .append(toString().replace("\n", "\\n").replace("\r", "\\r"))
                 .append("\'\r\n");
     }
 }
