@@ -46,7 +46,7 @@ public class CharNode implements Node {
 
     @Override
     public String toString() {
-        return "(" + Character.toString(character) + ")";
+        return Character.toString(character);
     }
 
     @Override
