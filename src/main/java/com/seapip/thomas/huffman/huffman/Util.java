@@ -23,7 +23,17 @@ public class Util {
             index++;
         }
         bitSet.set(index, true); //Set additional bit after last bit to true to prevent bits from being trimmed
-        return bitSet.toByteArray();
+        byte[] data = bitSet.toByteArray();
+
+        //Reduce size by another bytes if possible
+        int size = (int) Math.ceil(collection.size() / 8.0);
+        if (data.length > size) {
+            byte[] smallerData = new byte[size];
+            System.arraycopy(data, 0, smallerData, 0, size);
+            data = smallerData;
+        }
+
+        return data;
     }
 
     public static Collection<Boolean> addBoolean(Collection<Boolean> collection, Boolean b) {

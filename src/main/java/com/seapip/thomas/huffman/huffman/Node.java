@@ -16,4 +16,6 @@ public interface Node {
     void flatten(Collection<Character> characters, Collection<Boolean> structure);
 
     void toMap(Map<Character, Collection<Boolean>> map, Collection<Boolean> booleans);
+
+    void toString(StringBuilder stringBuilder, StringBuilder prefix, boolean isTail);
 }

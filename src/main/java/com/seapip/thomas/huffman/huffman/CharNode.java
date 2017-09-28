@@ -46,6 +46,14 @@ public class CharNode implements Node {
 
     @Override
     public String toString() {
-        return Character.toString(character);
+        return "(" + Character.toString(character) + ")";
+    }
+
+    @Override
+    public void toString(StringBuilder stringBuilder, StringBuilder prefix, boolean isTail) {
+        stringBuilder.append(prefix)
+                .append("|-\'")
+                .append(Character.toString(character).replace("\n", "\\n").replace("\r", "\\r"))
+                .append("\'\r\n");
     }
 }

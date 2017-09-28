@@ -21,6 +21,7 @@ public class Main {
                              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);) {
 
                             Huffman.compress(bufferedInputStream, bufferedOutputStream);
+                            bufferedOutputStream.flush();
                         }
                         break;
                     case "decompress":
@@ -34,6 +35,7 @@ public class Main {
                              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);) {
 
                             Huffman.decompress(bufferedInputStream, bufferedOutputStream);
+                            bufferedOutputStream.flush();
                         }
                         break;
                     default:

@@ -139,6 +139,19 @@ public class TreeNode implements Node {
 
     @Override
     public String toString() {
-        return "{" + leftNode + ", " + rightNode + '}';
+        StringBuilder stringBuilder = new StringBuilder().append("|--------------|\r\n| Huffman tree |\r\n|--------------|\r\n|\r\n");
+        toString(stringBuilder, new StringBuilder(), true);
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public void toString(StringBuilder stringBuilder, StringBuilder prefix, boolean isTail) {
+        if (rightNode != null) rightNode.toString(stringBuilder, newString(prefix, isTail, false), false);
+        stringBuilder.append(prefix).append("|---|\r\n");
+        if (leftNode != null) leftNode.toString(stringBuilder, newString(prefix, isTail, true), true);
+    }
+
+    private StringBuilder newString(StringBuilder prefix, boolean isTail, boolean isLeft) {
+        return new StringBuilder().append(prefix).append(isTail ^ isLeft ? "|   " : "    ");
     }
 }

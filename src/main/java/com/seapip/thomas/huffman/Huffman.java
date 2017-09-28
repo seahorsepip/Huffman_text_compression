@@ -43,6 +43,12 @@ public final class Huffman {
             //Create Huffman tree
             TreeNode tree = new TreeNode(content.toString());
 
+            //Output Huffman tree to console
+            Console console;
+            if ((console = System.console()) != null) {
+                console.printf(tree.toString());
+            }
+
             //Convert Huffman tree to map
             Map<Character, Collection<Boolean>> map = new HashMap<>();
             tree.toMap(map, new ArrayDeque<>());
