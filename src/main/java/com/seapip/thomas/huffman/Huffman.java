@@ -38,7 +38,7 @@ public final class Huffman {
                 content.append(scanner.next());
             }
 
-            if (content.length() == 0) throw new CompressionException("Content length needs to be larger then zero.");
+            if (content.length() == 0) throw new CompressionException("Content length needs to be larger than zero.");
 
             //Create Huffman tree
             TreeNode tree = new TreeNode(content.toString());
