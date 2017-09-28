@@ -146,12 +146,12 @@ public class TreeNode implements Node {
 
     @Override
     public void toString(StringBuilder stringBuilder, StringBuilder prefix, boolean isTail) {
-        if (rightNode != null) rightNode.toString(stringBuilder, newString(prefix, isTail, false), false);
+        if (rightNode != null) rightNode.toString(stringBuilder, newString(prefix, isTail), false);
         stringBuilder.append(prefix).append("|---|\r\n");
-        if (leftNode != null) leftNode.toString(stringBuilder, newString(prefix, isTail, true), true);
+        if (leftNode != null) leftNode.toString(stringBuilder, newString(prefix, !isTail), true);
     }
 
-    private StringBuilder newString(StringBuilder prefix, boolean isTail, boolean isLeft) {
-        return new StringBuilder().append(prefix).append(isTail ^ isLeft ? "|   " : "    ");
+    private StringBuilder newString(StringBuilder prefix, boolean isTail) {
+        return new StringBuilder().append(prefix).append(isTail ? "|   " : "    ");
     }
 }
