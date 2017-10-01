@@ -7,9 +7,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import static com.seapip.thomas.huffman.huffman.Util.addBoolean;
-import static com.seapip.thomas.huffman.huffman.Util.booleansToBytes;
-
 /**
  * The {@code TreeNode} class consists of a left and right node and has constructor methods
  * to be simply created from a given text. It also has it's own serialization implementation
@@ -47,7 +44,7 @@ public class TreeNode implements Node {
         this.rightNode = rightNode;
     }
 
-    public TreeNode(Queue<Character> characters, Queue<Boolean> structure) {
+    public TreeNode(Queue<Character> characters, BitQueue structure) {
         TreeNode tree = (TreeNode) unflatten(characters, structure);
         if (tree != null) {
             leftNode = tree.getLeftNode();
@@ -79,7 +76,7 @@ public class TreeNode implements Node {
         dataInputStream.readFully(structureBytes, 0, structureBytes.length);
 
         //Convert structure bytes to booleans
-        Queue<Boolean> structure = new ArrayDeque<>();
+        BitQueue structure = new BitQueue();
         for (byte b : structureBytes) for (int mask = 1; mask != 256; mask <<= 1) structure.add((b & mask) != 0);
 
         //Create Huffman tree from characters and tree structure
@@ -87,13 +84,13 @@ public class TreeNode implements Node {
     }
 
     @Override
-    public void flatten(Collection<Character> characters, Collection<Boolean> structure) {
+    public void flatten(Collection<Character> characters, BitQueue structure) {
         structure.add(false);
         if (leftNode != null) leftNode.flatten(characters, structure);
         if (rightNode != null) rightNode.flatten(characters, structure);
     }
 
-    private Node unflatten(Queue<Character> characters, Queue<Boolean> structure) {
+    private Node unflatten(Queue<Character> characters, BitQueue structure) {
         if (characters.isEmpty()) return null;
         return structure.poll() ? new CharNode(characters.poll()) : new TreeNode(unflatten(characters, structure), unflatten(characters, structure));
     }
@@ -113,7 +110,7 @@ public class TreeNode implements Node {
 
     public void write(OutputStream outputStream) throws IOException {
         Queue<Character> characters = new ArrayDeque<>();
-        Queue<Boolean> structure = new ArrayDeque<>();
+        BitQueue structure = new BitQueue();
 
         //Get characters and tree structure in pre order tree traversal
         flatten(characters, structure);
@@ -128,18 +125,18 @@ public class TreeNode implements Node {
         outputStream.write(ByteBuffer.allocate(4).putInt(structure.size()).array());
 
         //Write tree structure
-        outputStream.write(booleansToBytes(structure));
+        outputStream.write(structure.toByteArray());
     }
 
     @Override
-    public void toMap(Map<Character, Collection<Boolean>> map, Collection<Boolean> booleans) {
-        if (leftNode != null) leftNode.toMap(map, addBoolean(booleans, false));
-        if (rightNode != null) rightNode.toMap(map, addBoolean(booleans, true));
+    public void toMap(Map<Character, Collection<Boolean>> map, BitQueue bits) {
+        if (leftNode != null) leftNode.toMap(map, bits.copyAndAdd(false));
+        if (rightNode != null) rightNode.toMap(map, bits.copyAndAdd(true));
     }
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder().append("|--------------|\r\n| Huffman tree |\r\n|--------------|\r\n|\r\n");
+        StringBuilder stringBuilder = new StringBuilder().append("Huffman tree:\r\n|\r\n");
         toString(stringBuilder, new StringBuilder(), true);
         return stringBuilder.toString();
     }

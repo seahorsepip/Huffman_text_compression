@@ -13,9 +13,9 @@ import java.util.Map;
 public interface Node {
     int getValue();
 
-    void flatten(Collection<Character> characters, Collection<Boolean> structure);
+    void flatten(Collection<Character> characters, BitQueue structure);
 
-    void toMap(Map<Character, Collection<Boolean>> map, Collection<Boolean> booleans);
+    void toMap(Map<Character, Collection<Boolean>> map, BitQueue bits);
 
     void toString(StringBuilder stringBuilder, StringBuilder prefix, boolean isTail);
 }

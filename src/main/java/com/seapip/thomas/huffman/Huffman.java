@@ -1,14 +1,15 @@
 package com.seapip.thomas.huffman;
 
+import com.seapip.thomas.huffman.huffman.BitQueue;
 import com.seapip.thomas.huffman.huffman.CharNode;
 import com.seapip.thomas.huffman.huffman.Node;
 import com.seapip.thomas.huffman.huffman.TreeNode;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.*;
-
-import static com.seapip.thomas.huffman.huffman.Util.booleansToBytes;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@code Huffman} class consists exclusively of static methods to compress and decompress
@@ -31,32 +32,45 @@ public final class Huffman {
      */
     public static void compress(InputStream inputStream, OutputStream outputStream) throws CompressionException {
         try {
-            //Read text from input stream
-            StringBuilder content = new StringBuilder();
-            Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
-            while (scanner.hasNext()) {
-                content.append(scanner.next());
-            }
+            //Start time
+            long startTime = System.currentTimeMillis();
 
+            //Read text from input stream
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            int result = bufferedInputStream.read();
+            while (result != -1) {
+                byteArrayOutputStream.write((byte) result);
+                result = bufferedInputStream.read();
+            }
+            String content = byteArrayOutputStream.toString("UTF-8");
+
+            //Output read time to console
+            Console console = System.console();
+            long readTime = System.currentTimeMillis();
+            if (console  != null) console.printf("Read time: " + (readTime - startTime) + "ms\r\n");
+
+            //Throw compression exception if content length is zero
             if (content.length() == 0) throw new CompressionException("Content length needs to be larger than zero.");
 
             //Create Huffman tree
-            TreeNode tree = new TreeNode(content.toString());
-
-            //Output Huffman tree to console
-            Console console;
-            if ((console = System.console()) != null) console.printf(tree.toString());
+            TreeNode tree = new TreeNode(content);
 
             //Convert Huffman tree to map
             Map<Character, Collection<Boolean>> map = new HashMap<>();
-            tree.toMap(map, new ArrayDeque<>());
+            tree.toMap(map, new BitQueue());
 
             //Encode characters using map
-            Collection<Boolean> booleans = new ArrayDeque<>();
-            for (char character : content.toString().toCharArray()) booleans.addAll(map.get(character));
+            BitQueue bits = new BitQueue();
+            for (char character : content.toCharArray()) bits.addAll(map.get(character));
 
             //Convert encoded data to byte array
-            byte[] data = booleansToBytes(booleans);
+            byte[] data = bits.toByteArray();
+
+
+            //Output compression time to console
+            long compressionTime = System.currentTimeMillis();
+            if (console != null) console.printf("Compression time: " + (compressionTime - readTime) + "ms\r\n");
 
             //Write Huffman tree
             tree.write(outputStream);
@@ -69,6 +83,16 @@ public final class Huffman {
 
             //Write compressed data
             outputStream.write(data);
+
+            //Output write time to console
+            long writeTime = System.currentTimeMillis();
+            if (console != null) console.printf("Write time: " + (writeTime - compressionTime) + "ms\r\n");
+
+            //Output total time to console
+            if (console != null) console.printf("Total time: " + (writeTime - startTime) + "ms\r\n");
+
+            //Output Huffman tree to console
+            if (console != null) console.printf(tree.toString().replace("%", "%%"));
         } catch (IOException e) {
             throw new CompressionException(e.getMessage());
         }

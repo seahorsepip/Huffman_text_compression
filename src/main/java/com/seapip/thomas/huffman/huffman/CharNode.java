@@ -34,14 +34,14 @@ public class CharNode implements Node {
     }
 
     @Override
-    public void flatten(Collection<Character> characters, Collection<Boolean> structure) {
+    public void flatten(Collection<Character> characters, BitQueue structure) {
         structure.add(true);
         characters.add(character);
     }
 
     @Override
-    public void toMap(Map<Character, Collection<Boolean>> map, Collection<Boolean> booleans) {
-        map.put(character, booleans);
+    public void toMap(Map<Character, Collection<Boolean>> map, BitQueue bits) {
+        map.put(character, bits);
     }
 
     @Override
