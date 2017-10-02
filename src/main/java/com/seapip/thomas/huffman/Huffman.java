@@ -57,7 +57,7 @@ public final class Huffman {
 
             //Encode characters using map
             BitQueue bits = new BitQueue();
-            for (char character : content.toString().toCharArray()) bits.addAll(map.get(character));
+            for (char character : content.toCharArray()) bits.addAll(map.get(character));
 
             //Convert encoded data to byte array
             byte[] data = bits.toByteArray();
@@ -119,7 +119,7 @@ public final class Huffman {
             //Decode compressed data using Huffman tree
             Node node = tree;
             int offset = 0;
-            try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(outputStream)), true);) {
+            try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8")), true)) {
                 for (int i = 0; i < size; i++) {
                     byte b = dataInputStream.readByte();
                     for (int mask = 1; mask != 256; mask <<= 1) {
