@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * The {@code Huffman} class consists exclusively of static methods to compress and decompress
@@ -36,22 +37,16 @@ public final class Huffman {
             long startTime = System.currentTimeMillis();
 
             //Read text from input stream
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            int result = bufferedInputStream.read();
-            while (result != -1) {
-                byteArrayOutputStream.write((byte) result);
-                result = bufferedInputStream.read();
-            }
-            String content = byteArrayOutputStream.toString("UTF-8");
-
-            //Output read time to console
-            Console console = System.console();
-            long readTime = System.currentTimeMillis();
-            if (console  != null) console.printf("Read time: " + (readTime - startTime) + "ms\r\n");
+            String content = "";
+            Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
+            if (scanner.hasNext()) content = scanner.next();
 
             //Throw compression exception if content length is zero
             if (content.length() == 0) throw new CompressionException("Content length needs to be larger than zero.");
+
+            //Output read time to console
+            long readTime = System.currentTimeMillis();
+            System.out.println("Read time: " + (readTime - startTime) + "ms"); //NOSONAR
 
             //Create Huffman tree
             TreeNode tree = new TreeNode(content);
@@ -62,7 +57,7 @@ public final class Huffman {
 
             //Encode characters using map
             BitQueue bits = new BitQueue();
-            for (char character : content.toCharArray()) bits.addAll(map.get(character));
+            for (char character : content.toString().toCharArray()) bits.addAll(map.get(character));
 
             //Convert encoded data to byte array
             byte[] data = bits.toByteArray();
@@ -70,7 +65,7 @@ public final class Huffman {
 
             //Output compression time to console
             long compressionTime = System.currentTimeMillis();
-            if (console != null) console.printf("Compression time: " + (compressionTime - readTime) + "ms\r\n");
+            System.out.println("Compression time: " + (compressionTime - readTime) + "ms"); //NOSONAR
 
             //Write Huffman tree
             tree.write(outputStream);
@@ -86,13 +81,13 @@ public final class Huffman {
 
             //Output write time to console
             long writeTime = System.currentTimeMillis();
-            if (console != null) console.printf("Write time: " + (writeTime - compressionTime) + "ms\r\n");
+            System.out.println("Write time: " + (writeTime - compressionTime) + "ms"); //NOSONAR
 
             //Output total time to console
-            if (console != null) console.printf("Total time: " + (writeTime - startTime) + "ms\r\n");
+            System.out.println("Total time: " + (writeTime - startTime) + "ms"); //NOSONAR
 
             //Output Huffman tree to console
-            if (console != null) console.printf(tree.toString().replace("%", "%%"));
+            System.out.println(tree.toString()); //NOSONAR
         } catch (IOException e) {
             throw new CompressionException(e.getMessage());
         }
